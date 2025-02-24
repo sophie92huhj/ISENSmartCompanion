@@ -3,27 +3,30 @@ package fr.isen.soubry.isensmartcompanion
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.*
+import fr.isen.soubry.isensmartcompanion.navigation.BottomNavItem
+import fr.isen.soubry.isensmartcompanion.screens.AssistantScreen
+import fr.isen.soubry.isensmartcompanion.screens.EventsScreen
+import fr.isen.soubry.isensmartcompanion.screens.HistoryScreen
 import fr.isen.soubry.isensmartcompanion.ui.theme.ISENSmartCompanionTheme
+import fr.isen.soubry.isensmartcompanion.screens.EventDetailScreen
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             ISENSmartCompanionTheme {
-                Scaffold( modifier = Modifier.fillMaxSize() ) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                val navController = rememberNavController()
+                Scaffold(
+                    bottomBar = { BottomNavigationBar(navController) }
+                ) { innerPadding ->
+                    NavigationGraph(navController, Modifier.padding(innerPadding))
                 }
             }
         }
@@ -31,17 +34,34 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
+fun BottomNavigationBar(navController: NavHostController) {
+    val items = listOf(
+        BottomNavItem.Home,
+        BottomNavItem.Events,
+        BottomNavItem.History
     )
-}
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ISENSmartCompanionTheme {
-        Greeting("Android")
+    NavigationBar {
+        items.forEach { item ->
+            NavigationBarItem(
+                icon = { Icon(item.icon, contentDescription = item.title) },
+                label = { Text(item.title) },
+                selected = false,
+                onClick = { navController.navigate(item.route) }
+            )
+        }
     }
 }
+
+@Composable
+fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modifier) {
+    NavHost(navController, startDestination = BottomNavItem.Home.route, modifier = modifier) {
+        composable(BottomNavItem.Home.route) { AssistantScreen() }
+        composable(BottomNavItem.Events.route) { EventsScreen(navController) }
+        composable(BottomNavItem.History.route) { HistoryScreen() }
+        composable("eventDetail/{eventId}") { backStackEntry ->
+            EventDetailScreen(navController, backStackEntry)
+        }
+    }
+}
+
