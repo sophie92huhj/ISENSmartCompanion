@@ -15,7 +15,8 @@ import fr.isen.soubry.isensmartcompanion.screens.EventsScreen
 import fr.isen.soubry.isensmartcompanion.screens.HistoryScreen
 import fr.isen.soubry.isensmartcompanion.ui.theme.ISENSmartCompanionTheme
 import fr.isen.soubry.isensmartcompanion.screens.EventDetailScreen
-
+import androidx.lifecycle.viewmodel.compose.viewModel
+import fr.isen.soubry.isensmartcompanion.screens.EventsViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,13 +56,19 @@ fun BottomNavigationBar(navController: NavHostController) {
 
 @Composable
 fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modifier) {
+    // Création d'un ViewModel pour les événements
+    val eventsViewModel: EventsViewModel = viewModel() // ✅ Création d'un ViewModel partagé
+
+    // Appel à la page principale et aux autres pages
     NavHost(navController, startDestination = BottomNavItem.Home.route, modifier = modifier) {
-        composable(BottomNavItem.Home.route) { AssistantScreen() }
-        composable(BottomNavItem.Events.route) { EventsScreen(navController) }
-        composable(BottomNavItem.History.route) { HistoryScreen() }
+        composable(BottomNavItem.Home.route) { AssistantScreen() } // Page d'accueil
+        composable(BottomNavItem.Events.route) {
+            EventsScreen(navController, eventsViewModel) // Page des événements
+        }
+        composable(BottomNavItem.History.route) { HistoryScreen() } // Page historique
         composable("eventDetail/{eventId}") { backStackEntry ->
-            EventDetailScreen(navController, backStackEntry)
+            // Page de détails d'un événement
+            EventDetailScreen(navController, backStackEntry, eventsViewModel)
         }
     }
 }
-
