@@ -66,8 +66,8 @@ dependencies {
     // OkHttp (nécessaire pour les appels API)
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
 
-    implementation("com.google.ai.client.generativeai:generativeai:0.6.0") // 🔥 Gemini AI SDK
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3") // 🔥 Pour gérer les requêtes AI en arrière-plan
+    implementation("com.google.ai.client.generativeai:generativeai:0.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
     // Ajoutez la bibliothèque de Google pour l'API Gemini
     implementation("com.google.ai.client.generativeai:generativeai:0.6.0")
