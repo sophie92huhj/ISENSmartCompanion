@@ -1,5 +1,6 @@
 package fr.isen.soubry.isensmartcompanion.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,14 +17,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import fr.isen.soubry.isensmartcompanion.data.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.CoroutineScope // ✅ Ajout de l'import nécessaire
+import kotlinx.coroutines.CoroutineScope
 import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun HistoryScreen(viewModel: InteractionViewModel = viewModel()) {
+fun HistoryScreen(navController: NavController, viewModel: InteractionViewModel = viewModel()) {
     val coroutineScope = rememberCoroutineScope()
     val interactionHistory by viewModel.allInteractions.collectAsState(initial = emptyList())
 
@@ -38,7 +41,7 @@ fun HistoryScreen(viewModel: InteractionViewModel = viewModel()) {
         ) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(interactionHistory) { interaction ->
-                    HistoryItem(interaction, viewModel, coroutineScope)
+                    HistoryItem(interaction, viewModel, coroutineScope, navController)
                 }
             }
 
@@ -86,48 +89,48 @@ fun HistoryTopBar() {
     )
 }
 
-// 🔹 **Carte d'affichage des interactions, identique au design de EventsScreen**
 @Composable
-fun HistoryItem(interaction: Interaction, viewModel: InteractionViewModel, coroutineScope: CoroutineScope) {
+fun HistoryItem(interaction: Interaction, viewModel: InteractionViewModel, coroutineScope: CoroutineScope, navController: NavController) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .wrapContentSize() // ✅ Ajuste la taille au contenu
+            .padding(vertical = 8.dp)
+            .clickable { navController.navigate("historyDetail/${interaction.id}") },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(6.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)) // 🔴 Fond rouge clair, comme EventsScreen
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)) // 🔴 Fond rouge clair
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.Start
         ) {
-            // 📅 **Affichage de la date avec espace entre la date et l'heure**
-            Text(
-                text = "📅  ${formatDate(interaction.date)}",
-                fontSize = 14.sp,
-                color = Color.Gray
-            )
+            // 🔹 Icône calendrier en noir et blanc + Date
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.CalendarToday,
+                    contentDescription = "Date",
+                    tint = Color.Black, // ✅ Icône en noir
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = formatDate(interaction.date),
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+            }
 
-            Spacer(modifier = Modifier.height(8.dp)) // ✅ **Ajout d'un espace entre la date et la question**
+            Spacer(modifier = Modifier.height(8.dp))
 
-            // ❓ **Question en noir et en gras**
+            // 🔹 Question en noir et en gras
             Text(
-                text = "❓  ${interaction.question}",
+                text = interaction.question,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black // ✅ **Texte noir**
+                color = Color.Black
             )
 
-            Spacer(modifier = Modifier.height(8.dp)) // ✅ **Ajout d'un espace entre la question et la réponse**
-
-            // 🤖 **Réponse en noir**
-            Text(
-                text = "🤖  ${interaction.answer}",
-                fontSize = 16.sp,
-                color = Color.Black // ✅ **Texte noir**
-            )
-
-            // 🔹 **Bouton de suppression individuel**
+            // 🔹 Alignement du bouton suppression à droite
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
@@ -137,15 +140,16 @@ fun HistoryItem(interaction: Interaction, viewModel: InteractionViewModel, corou
                         viewModel.deleteInteraction(interaction)
                     }
                 }) {
-                    Icon(Icons.Filled.Delete, contentDescription = "Supprimer", tint = Color.Black) // 🗑️ Icône en noir
+                    Icon(Icons.Filled.Delete, contentDescription = "Supprimer", tint = Color.Black)
                 }
             }
         }
     }
 }
 
-// Fonction pour formater la date (Ajout d’un espace entre la date et l’heure)
+
+// Fonction pour formater la date
 fun formatDate(timestamp: Long): String {
-    val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-    return sdf.format(Date(timestamp)).replace(" ", "  ") // ✅ Ajout d'un espace entre la date et l'heure
+    val sdf = SimpleDateFormat("dd/MM/yyyy  HH:mm", Locale.getDefault())
+    return sdf.format(Date(timestamp))
 }

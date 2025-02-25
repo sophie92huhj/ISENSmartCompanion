@@ -15,6 +15,7 @@ import fr.isen.soubry.isensmartcompanion.screens.EventsScreen
 import fr.isen.soubry.isensmartcompanion.screens.HistoryScreen
 import fr.isen.soubry.isensmartcompanion.ui.theme.ISENSmartCompanionTheme
 import fr.isen.soubry.isensmartcompanion.screens.EventDetailScreen
+import fr.isen.soubry.isensmartcompanion.screens.HistoryDetailScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import fr.isen.soubry.isensmartcompanion.screens.EventsViewModel
 
@@ -56,19 +57,22 @@ fun BottomNavigationBar(navController: NavHostController) {
 
 @Composable
 fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modifier) {
-    // Création d'un ViewModel pour les événements
-    val eventsViewModel: EventsViewModel = viewModel() // ✅ Création d'un ViewModel partagé
+    val eventsViewModel: EventsViewModel = viewModel() // ✅ ViewModel partagé
 
-    // Appel à la page principale et aux autres pages
     NavHost(navController, startDestination = BottomNavItem.Home.route, modifier = modifier) {
-        composable(BottomNavItem.Home.route) { AssistantScreen() } // Page d'accueil
+        composable(BottomNavItem.Home.route) { AssistantScreen() }
         composable(BottomNavItem.Events.route) {
-            EventsScreen(navController, eventsViewModel) // Page des événements
+            EventsScreen(navController, eventsViewModel)
         }
-        composable(BottomNavItem.History.route) { HistoryScreen() } // Page historique
+        composable(BottomNavItem.History.route) {
+            HistoryScreen(navController) // ✅ Passer navController à HistoryScreen
+        }
         composable("eventDetail/{eventId}") { backStackEntry ->
-            // Page de détails d'un événement
             EventDetailScreen(navController, backStackEntry, eventsViewModel)
+        }
+        composable("historyDetail/{interactionId}") { backStackEntry ->
+            HistoryDetailScreen(navController, backStackEntry, viewModel()) // ✅ Ajout de la route pour HistoryDetailScreen
         }
     }
 }
+
