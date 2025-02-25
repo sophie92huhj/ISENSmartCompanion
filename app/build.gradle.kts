@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-
+    kotlin("kapt")
 }
 
 android {
@@ -71,6 +71,12 @@ dependencies {
 
     // Ajoutez la bibliothèque de Google pour l'API Gemini
     implementation("com.google.ai.client.generativeai:generativeai:0.6.0")
+
+    val room_version = "2.6.1"
+
+    implementation("androidx.room:room-runtime:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
 
     // Tests
     testImplementation("junit:junit:4.13.2")
