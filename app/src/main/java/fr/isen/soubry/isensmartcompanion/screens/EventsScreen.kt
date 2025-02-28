@@ -83,29 +83,36 @@ fun EventItem(event: Event, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .clickable {
-                navController.navigate("eventDetail/${event.id}")
-            },
-        shape = RoundedCornerShape(12.dp), // Coins arrondis
+            .padding(vertical = 8.dp),
+        shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(6.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFFFEBEE) // Fond rouge clair uniforme
         )
     ) {
-        Column(
+        Row(
             modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween // ✅ Aligner texte à gauche et bouton à droite
         ) {
-            // Affichage du titre de l'événement
+            // 📌 **Titre de l'événement**
             Text(
                 text = event.title,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFFB71C1C) // Rouge foncé
+                color = Color.Black, // ✅ Texte noir
+                modifier = Modifier.weight(1f) // ✅ Permet au texte de prendre tout l'espace disponible
             )
+
+            // 🔘 **Bouton "Détails" pour accéder aux infos**
+            Button(
+                onClick = { navController.navigate("eventDetail/${event.id}") },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF6F61)) // ✅ Bouton rouge ISEN
+            ) {
+                Text("Détails", color = Color.White) // ✅ Texte blanc dans le bouton
+            }
         }
     }
 }

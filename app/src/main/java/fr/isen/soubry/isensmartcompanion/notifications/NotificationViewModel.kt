@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import android.util.Log
+import android.graphics.Color
 import kotlinx.coroutines.launch
 import fr.isen.soubry.isensmartcompanion.MainActivity
 import fr.isen.soubry.isensmartcompanion.R
@@ -43,6 +44,7 @@ class NotificationViewModel : ViewModel() {
             .setContentTitle("Rappel d'événement")
             .setContentText("L'événement \"$eventTitle\" approche bientôt!")
             .setSmallIcon(R.drawable.cloche)
+            .setColor(Color.parseColor("#B71C1C"))
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH) // ✅ Affiche une bannière

@@ -121,7 +121,7 @@ fun EventDetailContent(event: Event, notificationViewModel: NotificationViewMode
             Icon(
                 imageVector = if (isReminderSet) Icons.Filled.NotificationsActive else Icons.Filled.NotificationsNone,
                 contentDescription = "Activer/Désactiver le rappel",
-                tint = if (isReminderSet) Color.Green else Color.Gray
+                tint = if (isReminderSet) Color(0xFFB71C1C) else Color.Gray
             )
         }
         Text(

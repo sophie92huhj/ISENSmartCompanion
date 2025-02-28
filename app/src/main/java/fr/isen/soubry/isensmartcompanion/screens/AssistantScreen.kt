@@ -21,6 +21,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.res.painterResource
+import fr.isen.soubry.isensmartcompanion.R
 import com.google.ai.client.generativeai.GenerativeModel
 import kotlinx.coroutines.withContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -90,7 +94,7 @@ fun AssistantScreen(viewModel: InteractionViewModel = viewModel()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFFF5F5F5), shape = MaterialTheme.shapes.medium)
+                .background(Color.White, shape = MaterialTheme.shapes.medium)
                 .padding(horizontal = 16.dp, vertical = 12.dp)
                 .align(Alignment.BottomCenter),
             verticalAlignment = Alignment.CenterVertically
@@ -105,42 +109,36 @@ fun AssistantScreen(viewModel: InteractionViewModel = viewModel()) {
                 modifier = Modifier.weight(1f).padding(end = 8.dp)
             )
 
-            // 📩 **Bouton envoyer avec flèche rouge**
-            Button(
-                onClick = {
-                    if (question.isNotEmpty()) {
-                        val currentQuestion = question // ✅ Stocker avant d’effacer
-                        question = "" // 🔄 Efface la zone de texte
+            // 🏹 **Flèche cliquable à la place du bouton rouge**
+            Image(
+                painter = painterResource(id = R.drawable.fleche), // ✅ Utilisation de l'image "fleche.png"
+                contentDescription = "Envoyer",
+                modifier = Modifier
+                    .size(40.dp) // ✅ Ajuste la taille de l’image
+                    .clickable {
+                        if (question.isNotEmpty()) {
+                            val currentQuestion = question
+                            question = ""
 
-                        coroutineScope.launch(Dispatchers.IO) {
-                            // 🔹 **Envoyer la requête à Gemini AI**
-                            val aiResponseText = getAIResponse(generativeModel, currentQuestion)
+                            coroutineScope.launch(Dispatchers.IO) {
+                                val aiResponseText = getAIResponse(generativeModel, currentQuestion)
 
-                            withContext(Dispatchers.Main) {
-                                // ✅ **Met à jour la question et la réponse sans effacer**
-                                lastQuestion = currentQuestion
-                                aiResponse = aiResponseText
+                                withContext(Dispatchers.Main) {
+                                    lastQuestion = currentQuestion
+                                    aiResponse = aiResponseText
+                                }
+
+                                viewModel.insertInteraction(currentQuestion, aiResponseText)
                             }
 
-                            // 🔹 **Sauvegarde de l'interaction dans l'historique**
-                            viewModel.insertInteraction(currentQuestion, aiResponseText)
+                            Toast.makeText(context, "Question envoyée", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(context, "Veuillez entrer une question", Toast.LENGTH_SHORT).show()
                         }
-
-                        Toast.makeText(context, "Question envoyée", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, "Veuillez entrer une question", Toast.LENGTH_SHORT).show()
-                    }
-                },
-                modifier = Modifier.size(50.dp).clip(CircleShape),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB71C1C))
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowForward, // ✅ Nouvelle icône flèche
-                    contentDescription = "Envoyer",
-                    tint = Color.Red
-                )
-            }
+                    } // ✅ Rend l’image cliquable
+            )
         }
+
     }
 
 }

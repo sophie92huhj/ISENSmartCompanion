@@ -13,6 +13,7 @@ import fr.isen.soubry.isensmartcompanion.navigation.BottomNavItem
 import fr.isen.soubry.isensmartcompanion.screens.AssistantScreen
 import fr.isen.soubry.isensmartcompanion.screens.EventsScreen
 import fr.isen.soubry.isensmartcompanion.screens.HistoryScreen
+import fr.isen.soubry.isensmartcompanion.screens.AgendaScreen
 import fr.isen.soubry.isensmartcompanion.ui.theme.ISENSmartCompanionTheme
 import fr.isen.soubry.isensmartcompanion.screens.EventDetailScreen
 import fr.isen.soubry.isensmartcompanion.screens.HistoryDetailScreen
@@ -40,6 +41,7 @@ fun BottomNavigationBar(navController: NavHostController) {
     val items = listOf(
         BottomNavItem.Home,
         BottomNavItem.Events,
+        BottomNavItem.Agenda,
         BottomNavItem.History
     )
 
@@ -70,6 +72,9 @@ fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modif
         composable("eventDetail/{eventId}") { backStackEntry ->
             EventDetailScreen(navController, backStackEntry, eventsViewModel)
         }
+
+        composable(BottomNavItem.Agenda.route) { AgendaScreen(navController) }
+
         composable("historyDetail/{interactionId}") { backStackEntry ->
             HistoryDetailScreen(navController, backStackEntry, viewModel()) // ✅ Ajout de la route pour HistoryDetailScreen
         }
