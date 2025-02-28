@@ -24,43 +24,56 @@ import kotlinx.coroutines.CoroutineScope
 import java.text.SimpleDateFormat
 import java.util.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HistoryScreen(navController: NavController, viewModel: InteractionViewModel = viewModel()) {
-    val coroutineScope = rememberCoroutineScope()
-    val interactionHistory by viewModel.allInteractions.collectAsState(initial = emptyList())
+fun HistoryScreen(viewModel: InteractionViewModel, navController: NavController) {
+    val interactions by viewModel.allInteractions.collectAsState()
 
     Scaffold(
-        topBar = { HistoryTopBar() }
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Historique",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFFB71C1C) // 🔴 Texte rouge ISEN
+                    )
+                },
+                actions = {
+                    // Bouton "Supprimer tout l'historique"
+                    IconButton(onClick = {
+                        viewModel.clearHistory() // ✅ Supprime tout l'historique
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = "Supprimer tout",
+                            tint = Color(0xFFB71C1C) // 🔴 Poubelle rouge ISEN
+                        )
+                    }
+                }
+            )
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(16.dp)
         ) {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(interactionHistory) { interaction ->
-                    HistoryItem(interaction, viewModel, coroutineScope, navController)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    coroutineScope.launch {
-                        viewModel.deleteAllInteractions()
+            if (interactions.isEmpty()) {
+                Text("Aucun historique pour le moment.", fontSize = 18.sp, color = Color.Gray)
+            } else {
+                LazyColumn {
+                    items(interactions) { interaction ->
+                        HistoryItem(interaction, viewModel, rememberCoroutineScope(), navController)
                     }
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB71C1C)), // 🔴 Rouge ISEN
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Effacer tout l'historique", color = Color.White)
+                }
             }
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -91,59 +104,71 @@ fun HistoryTopBar() {
 fun HistoryItem(interaction: Interaction, viewModel: InteractionViewModel, coroutineScope: CoroutineScope, navController: NavController) {
     Card(
         modifier = Modifier
-            .wrapContentSize()
+            .fillMaxWidth()
+            .wrapContentHeight() // ✅ Ajuste la hauteur dynamiquement
             .padding(vertical = 8.dp)
             .clickable { navController.navigate("historyDetail/${interaction.id}") },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(6.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE))
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)) // Rouge clair
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.Start
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.CalendarToday,
-                    contentDescription = "Date",
-                    tint = Color.Black,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = formatDate(interaction.date),
-                    fontSize = 14.sp,
-                    color = Color.Gray
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = interaction.question,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                IconButton(onClick = {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            // Bouton poubelle en haut à droite
+            IconButton(
+                onClick = {
                     coroutineScope.launch {
                         viewModel.deleteInteraction(interaction)
                     }
-                }) {
-                    Icon(Icons.Filled.Delete, contentDescription = "Supprimer", tint = Color.Black)
+                },
+                modifier = Modifier
+                    .align(Alignment.TopEnd) // ✅ Aligné en haut à droite
+                    .padding(8.dp) // ✅ Ajoute un petit espace
+            ) {
+                Icon(
+                    Icons.Filled.Delete,
+                    contentDescription = "Supprimer",
+                    tint = Color(0xFFB71C1C) // 🔴 Poubelle rouge ISEN
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.CalendarToday,
+                        contentDescription = "Date",
+                        tint = Color.Black,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = formatDate(interaction.date),
+                        fontSize = 14.sp,
+                        color = Color.Gray
+                    )
                 }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = interaction.question,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
             }
         }
     }
 }
 
 
+
 fun formatDate(timestamp: Long): String {
     val sdf = SimpleDateFormat("dd/MM/yyyy  HH:mm", Locale.getDefault())
     return sdf.format(Date(timestamp))
 }
+

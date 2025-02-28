@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
+import fr.isen.soubry.isensmartcompanion.data.InteractionViewModel
 import fr.isen.soubry.isensmartcompanion.navigation.BottomNavItem
 import fr.isen.soubry.isensmartcompanion.screens.AssistantScreen
 import fr.isen.soubry.isensmartcompanion.screens.EventsScreen
@@ -67,7 +68,8 @@ fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modif
             EventsScreen(navController, eventsViewModel)
         }
         composable(BottomNavItem.History.route) {
-            HistoryScreen(navController)
+            val interactionViewModel: InteractionViewModel = viewModel()
+            HistoryScreen(interactionViewModel, navController)
         }
         composable("eventDetail/{eventId}") { backStackEntry ->
             EventDetailScreen(navController, backStackEntry, eventsViewModel)

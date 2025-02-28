@@ -15,6 +15,10 @@ class InteractionViewModel(application: Application) : AndroidViewModel(applicat
     val allInteractions = _allInteractions.asStateFlow()
 
     init {
+        loadInteractions()
+    }
+
+    private fun loadInteractions() {
         viewModelScope.launch(Dispatchers.IO) {
             _allInteractions.value = interactionDao.getAllInteractions()
         }
@@ -28,21 +32,21 @@ class InteractionViewModel(application: Application) : AndroidViewModel(applicat
                 date = System.currentTimeMillis()
             )
             interactionDao.insertInteraction(interaction)
-            _allInteractions.value = interactionDao.getAllInteractions()
+            loadInteractions() // ✅ Recharge les données après l'insertion
         }
     }
 
     fun deleteInteraction(interaction: Interaction) {
         viewModelScope.launch(Dispatchers.IO) {
             interactionDao.deleteInteraction(interaction)
-            _allInteractions.value = interactionDao.getAllInteractions()
+            loadInteractions() // ✅ Recharge les données après la suppression
         }
     }
 
-    fun deleteAllInteractions() {
+    fun clearHistory() {
         viewModelScope.launch(Dispatchers.IO) {
-            interactionDao.deleteAllInteractions()
-            _allInteractions.value = interactionDao.getAllInteractions()
+            interactionDao.deleteAllInteractions() // ✅ Utilisation de la bonne fonction
+            _allInteractions.value = emptyList() // ✅ Met à jour la liste
         }
     }
 }

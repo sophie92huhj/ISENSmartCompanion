@@ -39,6 +39,10 @@ android {
         compose = true
         buildConfig = true
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.0" // Mets à jour selon ta version
+    }
 }
 
 dependencies {
@@ -79,6 +83,8 @@ dependencies {
     implementation("androidx.room:room-ktx:$room_version")
 
     implementation("com.kizitonwose.calendar:compose:2.4.0")
+
+    implementation("androidx.compose.ui:ui-text:1.5.0")
 
     // Tests
     testImplementation("junit:junit:4.13.2")
