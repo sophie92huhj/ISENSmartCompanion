@@ -19,8 +19,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.res.painterResource
 import fr.isen.soubry.isensmartcompanion.R
+import androidx.compose.foundation.shape.CircleShape
 import com.google.ai.client.generativeai.GenerativeModel
 import kotlinx.coroutines.withContext
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Send
 import androidx.lifecycle.viewmodel.compose.viewModel
 import fr.isen.soubry.isensmartcompanion.data.InteractionViewModel
 
@@ -96,34 +99,39 @@ fun AssistantScreen(viewModel: InteractionViewModel = viewModel()) {
                 singleLine = true,
                 modifier = Modifier.weight(1f).padding(end = 8.dp)
             )
+            IconButton(
+                onClick = {
+                    if (question.isNotEmpty()) {
+                        val currentQuestion = question
+                        question = ""
 
-            Image(
-                painter = painterResource(id = R.drawable.fleche),
-                contentDescription = "Envoyer",
-                modifier = Modifier
-                    .size(40.dp)
-                    .clickable {
-                        if (question.isNotEmpty()) {
-                            val currentQuestion = question
-                            question = ""
+                        coroutineScope.launch(Dispatchers.IO) {
+                            val aiResponseText = getAIResponse(generativeModel, currentQuestion)
 
-                            coroutineScope.launch(Dispatchers.IO) {
-                                val aiResponseText = getAIResponse(generativeModel, currentQuestion)
-
-                                withContext(Dispatchers.Main) {
-                                    lastQuestion = currentQuestion
-                                    aiResponse = aiResponseText
-                                }
-
-                                viewModel.insertInteraction(currentQuestion, aiResponseText)
+                            withContext(Dispatchers.Main) {
+                                lastQuestion = currentQuestion
+                                aiResponse = aiResponseText
                             }
 
-                            Toast.makeText(context, "Question envoyée", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(context, "Veuillez entrer une question", Toast.LENGTH_SHORT).show()
+                            viewModel.insertInteraction(currentQuestion, aiResponseText)
                         }
-                    } // ✅ Rend l’image cliquable
-            )
+
+                        Toast.makeText(context, "Question envoyée", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Veuillez entrer une question", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(Color(0xFFB71C1C), shape = CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Send,
+                    contentDescription = "Envoyer",
+                    tint = Color.White
+                )
+            }
+
         }
 
     }
