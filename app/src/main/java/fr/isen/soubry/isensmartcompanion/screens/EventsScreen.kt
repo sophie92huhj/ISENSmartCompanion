@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.animation.animateContentSize
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,13 +16,24 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import fr.isen.soubry.isensmartcompanion.models.Event
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.DropdownMenuItem
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventsScreen(navController: NavController, eventsViewModel: EventsViewModel) {
     val events by remember { derivedStateOf { eventsViewModel.events } }
     var searchText by remember { mutableStateOf("") }
+    var selectedCategory by remember { mutableStateOf("Toutes") }
+    val categories = listOf("Toutes", "Vie associative", "BDE", "BDS", "Professionnel", "Concours", "Institutionnel", "Technologique", "International")
+    var expanded by remember { mutableStateOf(false) }
 
-    val filteredEvents = events.filter { it.title.contains(searchText, ignoreCase = true) }
+    val filteredEvents = events.filter {
+        (selectedCategory == "Toutes" || it.category == selectedCategory) &&
+                it.title.contains(searchText, ignoreCase = true)
+    }
 
     Scaffold(
         topBar = { EventsTopBar() }
@@ -42,6 +52,43 @@ fun EventsScreen(navController: NavController, eventsViewModel: EventsViewModel)
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = selectedCategory,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Filtrer par catégorie", color = Color.Black) },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color.Black,
+                        unfocusedBorderColor = Color.Black
+                    ),
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                    },
+                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    categories.forEach { category ->
+                        DropdownMenuItem(
+                            text = { Text(category) },
+                            onClick = {
+                                selectedCategory = category
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -87,8 +134,7 @@ fun EventItem(event: Event, navController: NavController) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .clickable { navController.navigate("eventDetail/${event.id}") }, // Rend toute la carte cliquable
-
+            .clickable { navController.navigate("eventDetail/${event.id}") },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(6.dp),
         colors = CardDefaults.cardColors(
@@ -99,15 +145,15 @@ fun EventItem(event: Event, navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally // ✅ Centre le texte dans la colonne
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = event.title,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFFB71C1C), // ✅ Rouge ISEN
+                color = Color(0xFFB71C1C),
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center // ✅ Centre le texte horizontalement
+                textAlign = TextAlign.Center
             )
         }
     }
