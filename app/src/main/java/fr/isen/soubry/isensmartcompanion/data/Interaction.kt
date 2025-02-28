@@ -10,10 +10,9 @@ data class Interaction(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val question: String,
     val answer: String,
-    val date: Long = System.currentTimeMillis() // 🔄 Converti `Date` en `Long` pour Room
+    val date: Long = System.currentTimeMillis()
 )
 
-// 🔥 TypeConverter pour `Date`
 class Converters {
     @TypeConverter
     fun fromTimestamp(value: Long?): Date? {

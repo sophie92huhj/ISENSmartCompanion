@@ -47,8 +47,8 @@ class NotificationViewModel : ViewModel() {
             .setColor(Color.parseColor("#B71C1C"))
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
-            .setPriority(NotificationCompat.PRIORITY_HIGH) // ✅ Affiche une bannière
-            .setDefaults(NotificationCompat.DEFAULT_ALL) // ✅ Son + vibration + lumière
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
             .build()
 
         GlobalScope.launch(Dispatchers.Main) {
@@ -56,7 +56,6 @@ class NotificationViewModel : ViewModel() {
             if (NotificationManagerCompat.from(context).areNotificationsEnabled()) {
                 NotificationManagerCompat.from(context).notify(eventTitle.hashCode(), notification)
             } else {
-                // Permission non accordée, tu peux afficher un message ou demander l'autorisation
                 Log.e("Notification", "Permission de notification refusée")
             }
 

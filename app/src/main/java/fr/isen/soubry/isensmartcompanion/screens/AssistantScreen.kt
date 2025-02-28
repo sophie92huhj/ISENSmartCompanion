@@ -3,9 +3,6 @@ package fr.isen.soubry.isensmartcompanion.screens
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward// ✅ Nouvelle icône de flèche
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,9 +12,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.material3.Icon
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,14 +22,13 @@ import fr.isen.soubry.isensmartcompanion.R
 import com.google.ai.client.generativeai.GenerativeModel
 import kotlinx.coroutines.withContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import fr.isen.soubry.isensmartcompanion.data.Interaction
 import fr.isen.soubry.isensmartcompanion.data.InteractionViewModel
 
 @Composable
 fun AssistantScreen(viewModel: InteractionViewModel = viewModel()) {
     var question by remember { mutableStateOf("") }
-    var lastQuestion by remember { mutableStateOf<String?>(null) } // ✅ Stocke la dernière question affichée
-    var aiResponse by remember { mutableStateOf<String?>(null) } // ✅ Stocke uniquement la réponse actuelle
+    var lastQuestion by remember { mutableStateOf<String?>(null) }
+    var aiResponse by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
@@ -48,49 +41,45 @@ fun AssistantScreen(viewModel: InteractionViewModel = viewModel()) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            // 📌 **Titre ISEN Smart Companion agrandi**
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     text = "ISEN",
-                    fontSize = 42.sp, // ✅ **Agrandir la taille**
+                    fontSize = 42.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFFB71C1C) // 🔴 Rouge ISEN
+                    color = Color(0xFFB71C1C)
                 )
                 Text(
                     text = "Smart Companion",
-                    fontSize = 22.sp, // ✅ **Agrandir la taille**
+                    fontSize = 22.sp,
                     color = Color.Gray
                 )
             }
 
-            Spacer(modifier = Modifier.height(32.dp)) // ✅ **Espacer plus la question/réponse**
+            Spacer(modifier = Modifier.height(32.dp))
 
-            // 📩 **Affichage de la dernière interaction (question + réponse)**
             if (lastQuestion != null && aiResponse != null) {
                 Column(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
-                        text = "Vous : $lastQuestion", // ✅ La question est maintenant bien affichée !
-                        fontSize = 18.sp, // ✅ Légèrement plus grand
+                        text = "Vous : $lastQuestion",
+                        fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
                     )
-                    Spacer(modifier = Modifier.height(10.dp)) // ✅ Plus d’espace
+                    Spacer(modifier = Modifier.height(10.dp))
                     Text(
                         text = "IA : $aiResponse",
-                        fontSize = 18.sp, // ✅ Légèrement plus grand
+                        fontSize = 18.sp,
                         color = Color.Gray
                     )
                 }
             }
         }
-
-        // 📩 **Champ de texte + bouton envoyer en bas**
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -99,7 +88,6 @@ fun AssistantScreen(viewModel: InteractionViewModel = viewModel()) {
                 .align(Alignment.BottomCenter),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // ✏️ **Champ de saisie**
             TextField(
                 value = question,
                 onValueChange = { question = it },
@@ -109,12 +97,11 @@ fun AssistantScreen(viewModel: InteractionViewModel = viewModel()) {
                 modifier = Modifier.weight(1f).padding(end = 8.dp)
             )
 
-            // 🏹 **Flèche cliquable à la place du bouton rouge**
             Image(
-                painter = painterResource(id = R.drawable.fleche), // ✅ Utilisation de l'image "fleche.png"
+                painter = painterResource(id = R.drawable.fleche),
                 contentDescription = "Envoyer",
                 modifier = Modifier
-                    .size(40.dp) // ✅ Ajuste la taille de l’image
+                    .size(40.dp)
                     .clickable {
                         if (question.isNotEmpty()) {
                             val currentQuestion = question
@@ -143,7 +130,6 @@ fun AssistantScreen(viewModel: InteractionViewModel = viewModel()) {
 
 }
 
-// 🔹 **Fonction pour interroger Gemini AI**
 private suspend fun getAIResponse(generativeModel: GenerativeModel, input: String): String {
     return try {
         val response = generativeModel.generateContent(input)

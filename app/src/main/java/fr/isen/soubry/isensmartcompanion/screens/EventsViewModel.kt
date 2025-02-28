@@ -10,11 +10,11 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class EventsViewModel : ViewModel() {
-    private val _events = mutableStateListOf<Event>() // ✅ Liste qui se met à jour dynamiquement
+    private val _events = mutableStateListOf<Event>()
     val events: List<Event> get() = _events
 
     init {
-        fetchEvents() // ✅ Charge les événements dès le démarrage
+        fetchEvents()
     }
 
     fun fetchEvents() {
@@ -22,8 +22,8 @@ class EventsViewModel : ViewModel() {
             override fun onResponse(call: Call<List<Event>>, response: Response<List<Event>>) {
                 if (response.isSuccessful) {
                     response.body()?.let {
-                        _events.clear()  // ✅ Efface les anciens événements
-                        _events.addAll(it) // ✅ Ajoute les nouveaux événements
+                        _events.clear()
+                        _events.addAll(it)
                     }
                 }
             }

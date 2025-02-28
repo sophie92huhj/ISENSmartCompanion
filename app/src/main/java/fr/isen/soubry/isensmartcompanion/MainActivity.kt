@@ -59,7 +59,7 @@ fun BottomNavigationBar(navController: NavHostController) {
 
 @Composable
 fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modifier) {
-    val eventsViewModel: EventsViewModel = viewModel() // ✅ ViewModel partagé
+    val eventsViewModel: EventsViewModel = viewModel()
 
     NavHost(navController, startDestination = BottomNavItem.Home.route, modifier = modifier) {
         composable(BottomNavItem.Home.route) { AssistantScreen() }
@@ -67,7 +67,7 @@ fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modif
             EventsScreen(navController, eventsViewModel)
         }
         composable(BottomNavItem.History.route) {
-            HistoryScreen(navController) // ✅ Passer navController à HistoryScreen
+            HistoryScreen(navController)
         }
         composable("eventDetail/{eventId}") { backStackEntry ->
             EventDetailScreen(navController, backStackEntry, eventsViewModel)
@@ -76,7 +76,7 @@ fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modif
         composable(BottomNavItem.Agenda.route) { AgendaScreen(navController) }
 
         composable("historyDetail/{interactionId}") { backStackEntry ->
-            HistoryDetailScreen(navController, backStackEntry, viewModel()) // ✅ Ajout de la route pour HistoryDetailScreen
+            HistoryDetailScreen(navController, backStackEntry, viewModel())
         }
     }
 }

@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
 @Database(entities = [Interaction::class], version = 1, exportSchema = false)
-@TypeConverters(Converters::class) // Ajout du TypeConverter pour la gestion des dates
+@TypeConverters(Converters::class)
 abstract class HistoryDatabase : RoomDatabase() {
     abstract fun interactionDao(): InteractionDao
 
@@ -22,7 +22,7 @@ abstract class HistoryDatabase : RoomDatabase() {
                     HistoryDatabase::class.java,
                     "history_database"
                 )
-                    .fallbackToDestructiveMigration() // ✅ Évite les conflits de version
+                    .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance

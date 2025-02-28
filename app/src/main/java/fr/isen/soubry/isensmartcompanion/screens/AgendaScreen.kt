@@ -1,9 +1,7 @@
 package fr.isen.soubry.isensmartcompanion.screens
 
-import android.os.Bundle
+
 import android.widget.CalendarView
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -70,7 +68,7 @@ fun AgendaScreen(navController: NavController) {
 
             Button(
                 onClick = { showDialog = true },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB71C1C)) // Rouge ISEN
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB71C1C))
             ) {
                 Text("Ajouter un événement", color = Color.White)
             }

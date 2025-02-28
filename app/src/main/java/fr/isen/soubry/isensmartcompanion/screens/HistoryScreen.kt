@@ -47,7 +47,6 @@ fun HistoryScreen(navController: NavController, viewModel: InteractionViewModel 
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Bouton pour supprimer tout l'historique
             Button(
                 onClick = {
                     coroutineScope.launch {
@@ -63,7 +62,6 @@ fun HistoryScreen(navController: NavController, viewModel: InteractionViewModel 
     }
 }
 
-// 🔹 **Barre du haut identique à EventsScreen**
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryTopBar() {
@@ -77,7 +75,7 @@ fun HistoryTopBar() {
                     text = "ISEN",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFFB71C1C) // 🔴 Rouge ISEN
+                    color = Color(0xFFB71C1C)
                 )
                 Text(
                     text = "Smart Companion",
@@ -93,23 +91,22 @@ fun HistoryTopBar() {
 fun HistoryItem(interaction: Interaction, viewModel: InteractionViewModel, coroutineScope: CoroutineScope, navController: NavController) {
     Card(
         modifier = Modifier
-            .wrapContentSize() // ✅ Ajuste la taille au contenu
+            .wrapContentSize()
             .padding(vertical = 8.dp)
             .clickable { navController.navigate("historyDetail/${interaction.id}") },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(6.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)) // 🔴 Fond rouge clair
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE))
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.Start
         ) {
-            // 🔹 Icône calendrier en noir et blanc + Date
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Default.CalendarToday,
                     contentDescription = "Date",
-                    tint = Color.Black, // ✅ Icône en noir
+                    tint = Color.Black,
                     modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
@@ -122,7 +119,6 @@ fun HistoryItem(interaction: Interaction, viewModel: InteractionViewModel, corou
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // 🔹 Question en noir et en gras
             Text(
                 text = interaction.question,
                 fontSize = 18.sp,
@@ -130,7 +126,6 @@ fun HistoryItem(interaction: Interaction, viewModel: InteractionViewModel, corou
                 color = Color.Black
             )
 
-            // 🔹 Alignement du bouton suppression à droite
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
@@ -148,7 +143,6 @@ fun HistoryItem(interaction: Interaction, viewModel: InteractionViewModel, corou
 }
 
 
-// Fonction pour formater la date
 fun formatDate(timestamp: Long): String {
     val sdf = SimpleDateFormat("dd/MM/yyyy  HH:mm", Locale.getDefault())
     return sdf.format(Date(timestamp))

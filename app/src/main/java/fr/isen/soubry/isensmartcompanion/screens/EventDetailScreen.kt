@@ -1,6 +1,5 @@
 package fr.isen.soubry.isensmartcompanion.screens
 
-import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -28,7 +27,7 @@ import fr.isen.soubry.isensmartcompanion.notifications.NotificationViewModel
 import fr.isen.soubry.isensmartcompanion.notifications.SharedPreferencesManager
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun EventDetailScreen(
     navController: NavController,

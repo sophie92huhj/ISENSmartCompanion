@@ -18,10 +18,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import fr.isen.soubry.isensmartcompanion.data.Interaction
 import fr.isen.soubry.isensmartcompanion.data.InteractionViewModel
-import java.text.SimpleDateFormat
-import java.util.*
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryDetailScreen(navController: NavController, backStackEntry: NavBackStackEntry, viewModel: InteractionViewModel = viewModel()) {
     val interactionId = backStackEntry.arguments?.getString("interactionId")?.toIntOrNull()
@@ -52,35 +49,31 @@ fun HistoryDetailScreen(navController: NavController, backStackEntry: NavBackSta
     }
 }
 
-// 🔹 **Affichage des détails de l'interaction**
 @Composable
 fun HistoryDetailContent(interaction: Interaction) {
     Spacer(modifier = Modifier.height(16.dp))
 
-    // 🔹 **Affichage de la question en rouge ISEN**
     Text(
-        text = interaction.question, // ✅ Suppression du ❓
+        text = interaction.question,
         fontSize = 22.sp,
         fontWeight = FontWeight.Bold,
-        color = Color(0xFFB71C1C) // 🔴 Rouge ISEN, comme EventDetailScreen
+        color = Color(0xFFB71C1C)
     )
 
     Spacer(modifier = Modifier.height(16.dp))
 
-    // 🏷 **Carte contenant la réponse**
     Card(
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(6.dp),
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)) // 🔴 Fond rouge clair, comme HistoryScreen
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // 📅 Icône calendrier en noir et blanc
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Filled.CalendarToday,
                     contentDescription = "Date",
-                    tint = Color.Black, // ✅ Icône en noir et blanc
+                    tint = Color.Black,
                     modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
@@ -93,7 +86,6 @@ fun HistoryDetailContent(interaction: Interaction) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // ✅ **Affichage de la réponse (sans logo IA)**
             Text(
                 text = interaction.answer,
                 fontSize = 18.sp,
@@ -103,7 +95,6 @@ fun HistoryDetailContent(interaction: Interaction) {
     }
 }
 
-// 🔹 **Barre du haut pour revenir en arrière**
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryDetailTopBar(navController: NavController) {
