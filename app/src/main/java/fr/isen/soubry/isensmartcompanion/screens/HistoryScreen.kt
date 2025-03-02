@@ -135,9 +135,6 @@ fun HistoryItem(
     coroutineScope: CoroutineScope,
     navController: NavController
 ) {
-    // 🔄 Utilisation de remember pour observer l'état des favoris dynamiquement
-    val isFavorite = remember(interaction) { mutableStateOf(interaction.isFavorite) }
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -162,13 +159,12 @@ fun HistoryItem(
                     onClick = {
                         coroutineScope.launch {
                             viewModel.toggleFavorite(interaction)
-                            isFavorite.value = !isFavorite.value // 🔄 Met à jour immédiatement l'état local
                         }
                     }
                 ) {
                     Icon(
-                        imageVector = if (isFavorite.value) Icons.Filled.Star else Icons.Outlined.StarBorder,
-                        contentDescription = if (isFavorite.value) "Retirer des favoris" else "Ajouter aux favoris",
+                        imageVector = if (interaction.isFavorite) Icons.Filled.Star else Icons.Outlined.StarBorder,
+                        contentDescription = if (interaction.isFavorite) "Retirer des favoris" else "Ajouter aux favoris",
                         tint = Color(0xFFB71C1C) // 🔴 Rouge ISEN
                     )
                 }
@@ -207,12 +203,10 @@ fun HistoryItem(
 
                 Text(
                     text = interaction.question,
-
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
-
             }
         }
     }

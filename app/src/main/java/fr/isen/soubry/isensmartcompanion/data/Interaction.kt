@@ -4,6 +4,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import java.util.*
+import androidx.room.ColumnInfo
+
 
 @Entity(tableName = "interactions")
 data class Interaction(
@@ -11,7 +13,7 @@ data class Interaction(
     val question: String,
     val answer: String,
     val date: Long = System.currentTimeMillis(),
-    var isFavorite: Boolean = false
+    @ColumnInfo(name = "is_favorite") var isFavorite: Boolean = false
 )
 
 class Converters {

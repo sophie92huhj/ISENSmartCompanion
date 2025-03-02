@@ -25,8 +25,10 @@ class InteractionViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     fun toggleFavorite(interaction: Interaction) {
-        _allInteractions.value = _allInteractions.value.map {
-            if (it.id == interaction.id) it.copy(isFavorite = !it.isFavorite) else it
+        viewModelScope.launch {
+            val newFavoriteState = !interaction.isFavorite
+            interactionDao.updateFavorite(interaction.id, newFavoriteState) // ✅ Maintenant id est bien un Int
+            _allInteractions.value = interactionDao.getAllInteractions() // 🔄 Recharger les données
         }
     }
 

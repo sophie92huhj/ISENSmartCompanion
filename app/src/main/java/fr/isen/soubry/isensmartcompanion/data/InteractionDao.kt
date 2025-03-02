@@ -17,4 +17,7 @@ interface InteractionDao {
 
     @Query("SELECT * FROM interactions WHERE question = :question ORDER BY date DESC LIMIT 1")
     suspend fun getLastInteraction(question: String): Interaction?
+
+    @Query("UPDATE interactions SET is_favorite = :isFavorite WHERE id = :interactionId")
+    suspend fun updateFavorite(interactionId: Int, isFavorite: Boolean)
 }
