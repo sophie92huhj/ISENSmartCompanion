@@ -10,7 +10,8 @@ data class Interaction(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val question: String,
     val answer: String,
-    val date: Long = System.currentTimeMillis()
+    val date: Long = System.currentTimeMillis(),
+    var isFavorite: Boolean = false
 )
 
 class Converters {

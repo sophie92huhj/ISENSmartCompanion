@@ -24,6 +24,12 @@ class InteractionViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    fun toggleFavorite(interaction: Interaction) {
+        _allInteractions.value = _allInteractions.value.map {
+            if (it.id == interaction.id) it.copy(isFavorite = !it.isFavorite) else it
+        }
+    }
+
     fun insertInteraction(question: String, answer: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val interaction = Interaction(

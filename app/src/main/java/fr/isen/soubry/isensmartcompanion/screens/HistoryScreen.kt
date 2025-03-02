@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,16 +24,18 @@ import kotlinx.coroutines.CoroutineScope
 import java.text.SimpleDateFormat
 import java.util.*
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun HistoryScreen(viewModel: InteractionViewModel, navController: NavController) {
     val interactions by viewModel.allInteractions.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     var searchText by remember { mutableStateOf("") }
+    var showFavoritesOnly by remember { mutableStateOf(false) }
 
-    // Filtrage des interactions en fonction du texte de recherche
+    // Filtrage des interactions en fonction du texte de recherche et du filtre favoris
     val filteredInteractions = interactions.filter {
-        it.question.contains(searchText, ignoreCase = true)
+        it.question.contains(searchText, ignoreCase = true) &&
+                (!showFavoritesOnly || it.isFavorite) // Filtrer les favoris si activé
     }
 
     Scaffold(
@@ -53,7 +57,21 @@ fun HistoryScreen(viewModel: InteractionViewModel, navController: NavController)
                 singleLine = true
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // ⭐ Bouton pour filtrer uniquement les favoris
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = showFavoritesOnly,
+                    onCheckedChange = { showFavoritesOnly = it }
+                )
+                Text("Afficher uniquement les favoris", fontSize = 16.sp, color = Color.Black)
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Bouton "Supprimer tout l'historique"
             Button(
@@ -111,7 +129,15 @@ fun HistoryTopBar() {
 }
 
 @Composable
-fun HistoryItem(interaction: Interaction, viewModel: InteractionViewModel, coroutineScope: CoroutineScope, navController: NavController) {
+fun HistoryItem(
+    interaction: Interaction,
+    viewModel: InteractionViewModel,
+    coroutineScope: CoroutineScope,
+    navController: NavController
+) {
+    // 🔄 Utilisation de remember pour observer l'état des favoris dynamiquement
+    val isFavorite = remember(interaction) { mutableStateOf(interaction.isFavorite) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -123,22 +149,44 @@ fun HistoryItem(interaction: Interaction, viewModel: InteractionViewModel, corou
         colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)) // Fond rouge clair
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
-            // Bouton poubelle en haut à droite
-            IconButton(
-                onClick = {
-                    coroutineScope.launch {
-                        viewModel.deleteInteraction(interaction)
-                    }
-                },
+
+            // ⭐ & 🗑 Groupe des icônes en haut à droite
+            Row(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(8.dp)
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    Icons.Filled.Delete,
-                    contentDescription = "Supprimer",
-                    tint = Color(0xFFB71C1C) // 🔴 Poubelle rouge ISEN
-                )
+                // ⭐ Bouton étoile (favoris)
+                IconButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            viewModel.toggleFavorite(interaction)
+                            isFavorite.value = !isFavorite.value // 🔄 Met à jour immédiatement l'état local
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = if (isFavorite.value) Icons.Filled.Star else Icons.Outlined.StarBorder,
+                        contentDescription = if (isFavorite.value) "Retirer des favoris" else "Ajouter aux favoris",
+                        tint = Color(0xFFB71C1C) // 🔴 Rouge ISEN
+                    )
+                }
+
+                // 🗑 Bouton poubelle (supprimer)
+                IconButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            viewModel.deleteInteraction(interaction)
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = "Supprimer",
+                        tint = Color(0xFFB71C1C) // 🔴 Poubelle rouge ISEN
+                    )
+                }
             }
 
             Column(
@@ -159,15 +207,21 @@ fun HistoryItem(interaction: Interaction, viewModel: InteractionViewModel, corou
 
                 Text(
                     text = interaction.question,
+
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
+
             }
         }
     }
 }
 
+
+
+
+// Fonction pour formater la date
 fun formatDate(timestamp: Long): String {
     val sdf = SimpleDateFormat("dd/MM/yyyy  HH:mm", Locale.getDefault())
     return sdf.format(Date(timestamp))
